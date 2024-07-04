@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Interface</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Conectar WhatsApp</h1>
+        <button id="connectButton">Conectar</button>
+        <div id="qrContainer" style="margin: 20px 0;">
+            <img id="qrImage" src="" alt="QR Code" style="display: none; max-width: 100%; height: auto;">
+        </div>
+        <h1>Definir Prompt Base</h1>
+        <textarea id="prompt" rows="10" cols="50" placeholder="Digite o prompt base aqui..."></textarea>
+        <button id="setPromptButton">Definir Prompt</button>
+    </div>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
