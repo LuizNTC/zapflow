@@ -1,12 +1,16 @@
+// app.js
 const venom = require("venom-bot");
 const axios = require("axios");
 
-venom.create({
-    session: "chatGPT_BOT",
-    multidevice: true
-})
-.then((client) => start(client))
-.catch((err) => console.log(err));
+let clientInstance;
+
+const start = (client) => {
+    clientInstance = client;
+    client.onMessage((message) => {
+        console.log('Mensagem recebida:', message.body); // Mostra a mensagem recebida no console
+        processQueue();
+    });
+};
 
 const apiKey = "AIzaSyBbNTFE9gMdzBHtW5yfPV6SLeLmHbyG8_I";
 const requestQueue = [];
@@ -17,14 +21,6 @@ const sessions = {};
 
 // Prompt base para a IA
 const basePrompt = "Você é um atendente virtual de uma pizzaria chamada Pizzaria 'Luiz da Calabresa Grande'. Atendemos de segunda a sexta das 18h às 23h, temos pizza tamanho familia e gigante, a grande custa R$80 e a gigante custa R$100, o frete para toda a cidade é R$10. Estamos localizados na marechal floriano em frente ao quiosque, se possivel, atenda os clientes com alguns emojis para deixar a mensagem mais amigavel possivel, de preferencia, quebre linhas tambem para nao ficar uma mensagem toda embaralhada e maçante.";
-
-const start = (client) => {
-    client.onMessage((message) => {
-        console.log('Mensagem recebida:', message.body); // Mostra a mensagem recebida no console
-        requestQueue.push({ client, message });
-        processQueue();
-    });
-};
 
 const processQueue = () => {
     if (isProcessingQueue || requestQueue.length === 0) return;
@@ -84,3 +80,5 @@ const processQueue = () => {
 
     tryRequest(3); // Tenta a requisição com até 3 tentativas
 };
+
+module.exports = { start, requestQueue };
