@@ -3,19 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Interface</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>Painel de Gerenciamento</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Conectar WhatsApp</h1>
-        <button id="connectButton">Conectar</button>
-        <div id="qrContainer" style="margin: 20px 0;">
-            <img id="qrImage" src="" alt="QR Code" style="display: none; max-width: 100%; height: auto;">
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        setTimeout(() => {
+            const userId = getCookie('user-id');
+            if (!userId) {
+                console.log('Usuário não autenticado, redirecionando para login.html');
+                window.location.href = 'login.html';
+            } else {
+                console.log('Usuário autenticado com cookie:', document.cookie);
+
+                // Verificar sessão no servidor
+                fetch('/check-session')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.authenticated) {
+                            console.log('Sessão não autenticada no servidor, redirecionando para login.html');
+                            window.location.href = 'login.html';
+                        } else {
+                            console.log('Sessão autenticada no servidor:', data.userId);
+                        }
+                    })
+                    .catch(error => {
+                        console.log('Erro ao verificar sessão no servidor:', error);
+                        window.location.href = 'login.html';
+                    });
+            }
+        }, 100);
+    </script>
+    <div class="sidebar">
+        <div class="logo">
+            <h2>ZapLite</h2>
         </div>
-        <h1>Definir Prompt Base</h1>
-        <textarea id="prompt" rows="10" cols="50" placeholder="Digite o prompt base aqui..."></textarea>
-        <button id="setPromptButton">Definir Prompt</button>
+        <ul class="menu">
+            <li class="active"><a href="#dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#planos"><i class="fas fa-box"></i> Planos</a></li>
+            <li><a href="#configuracoes"><i class="fas fa-cog"></i> Configurações</a></li>
+            <li><a href="#sair" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div id="dashboard" class="content">
+            <h1>Dashboard</h1>
+            <div id="connectContainer">
+                <button id="connectButton">Conectar</button>
+                <span id="status" class="status-disconnected">Desconectado</span>
+            </div>
+            <div id="qrContainer" style="margin: 20px 0;">
+                <img id="qrImage" src="" alt="QR Code" style="display: none; max-width: 100%; height: auto;">
+            </div>
+            <h2>Definir Prompt Base</h2>
+            <textarea id="prompt" rows="10" cols="50" placeholder="Digite o prompt base aqui..."></textarea>
+            <button id="setPromptButton">Definir Prompt</button>
+        </div>
+        <div id="planos" class="content" style="display:none;">
+            <h1>Planos</h1>
+            <p>Conteúdo da página de planos.</p>
+        </div>
+        <div id="configuracoes" class="content" style="display:none;">
+            <h1>Configurações</h1>
+            <p>Conteúdo da página de configurações.</p>
+        </div>
     </div>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script src="script.js"></script>

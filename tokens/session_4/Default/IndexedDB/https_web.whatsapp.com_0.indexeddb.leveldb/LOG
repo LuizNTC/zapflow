@@ -1,0 +1,23 @@
+2024/07/11-14:20:02.727 9a0 Reusing MANIFEST C:\Users\Gu_fe\Desktop\zapflow\zapflow\tokens\session_4\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2024/07/11-14:20:02.727 9a0 Recovering log #47
+2024/07/11-14:20:02.734 9a0 Reusing old log C:\Users\Gu_fe\Desktop\zapflow\zapflow\tokens\session_4\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000047.log 
+2024/07/11-14:20:07.153 7b8 Level-0 table #52: started
+2024/07/11-14:20:07.160 7b8 Level-0 table #52: 184926 bytes OK
+2024/07/11-14:20:07.161 7b8 Delete type=0 #47
+2024/07/11-14:20:07.162 9a0 Manual compaction at level-0 from '\x00\x19\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1a\x00\x00\x00' @ 0 : 0; will stop at (end)
+2024/07/11-14:20:08.270 2650 Compacting 1@1 + 1@2 files
+2024/07/11-14:20:08.307 2650 Generated table #53@1: 32496 keys, 1213795 bytes
+2024/07/11-14:20:08.308 2650 Compacted 1@1 + 1@2 files => 1213795 bytes
+2024/07/11-14:20:08.308 2650 compacted to: files[ 0 0 1 0 0 0 0 ]
+2024/07/11-14:20:08.309 2650 Delete type=2 #49
+2024/07/11-14:20:08.309 2650 Delete type=2 #52
+2024/07/11-14:25:09.544 9a0 Level-0 table #55: started
+2024/07/11-14:25:09.552 9a0 Level-0 table #55: 177071 bytes OK
+2024/07/11-14:25:09.553 9a0 Delete type=0 #51
+2024/07/11-14:25:09.554 9a0 Manual compaction at level-0 from '\x00\x1a\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1b\x00\x00\x00' @ 0 : 0; will stop at (end)
+2024/07/11-14:25:15.306 2650 Compacting 1@1 + 1@2 files
+2024/07/11-14:25:15.358 2650 Generated table #56@1: 34120 keys, 1275308 bytes
+2024/07/11-14:25:15.359 2650 Compacted 1@1 + 1@2 files => 1275308 bytes
+2024/07/11-14:25:15.359 2650 compacted to: files[ 0 0 1 0 0 0 0 ]
+2024/07/11-14:25:15.360 2650 Delete type=2 #53
+2024/07/11-14:25:15.360 2650 Delete type=2 #55

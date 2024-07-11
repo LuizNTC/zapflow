@@ -1,6 +1,13 @@
-// app.js
 const venom = require("venom-bot");
 const axios = require("axios");
+const mysql = require('mysql2');
+const dbConfig = {
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'whatsapp_db'
+};
+const db = mysql.createConnection(dbConfig);
 
 let clientInstance;
 
@@ -8,11 +15,12 @@ const start = (client) => {
     clientInstance = client;
     client.onMessage((message) => {
         console.log('Mensagem recebida:', message.body); // Mostra a mensagem recebida no console
+        requestQueue.push({ client, message });
         processQueue();
     });
 };
 
-const apiKey = "AIzaSyBbNTFE9gMdzBHtW5yfPV6SLeLmHbyG8_I";
+const apiKey = "AIzaSyBbNTFE9gMdzBHtW5yfPV6SLeLmHbyG8_I"; // Adicione sua chave de API aqui
 const requestQueue = [];
 let isProcessingQueue = false;
 
@@ -28,11 +36,15 @@ const processQueue = () => {
     isProcessingQueue = true;
     const { client, message } = requestQueue.shift();
 
+    console.log(`Processando mensagem de ${message.from}`);
+
     const tryRequest = (retries) => {
         const session = sessions[message.from] || { history: [] };
         session.history.push(message.body);
 
         const fullPrompt = `${basePrompt}\n\nHistórico da conversa:\n${session.history.join('\n')}`;
+
+        console.log(`Enviando prompt para API: ${fullPrompt}`);
 
         axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
             "contents": [{"parts": [{"text": fullPrompt}]}]

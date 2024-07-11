@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="login.css">
+    <title>Login</title>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <img src="/images/logo-zaplite.png" alt="Logo da Marca">
+            </div>
+            <div class="extras">
+                <ul class="checklist">
+                    <li><img src="/images/checklist_icon.png" alt="Check">I.A. acessível para seu WhatsApp</li>
+                    <li><img src="/images/checklist_icon.png" alt="Check">Aumento na conversão</li>
+                    <li><img src="/images/checklist_icon.png" alt="Check">Atenda seus clientes 24h por dia</li>
+                    <li><img src="/images/checklist_icon.png" alt="Check">Facilidade de uso</li>
+                    <li><img src="/images/checklist_icon.png" alt="Check">Respostas Instantâneas e eficientes</li>
+                </ul>
+                <a href="#" class="forgot-password"><strong>Esqueci minha senha</strong></a>
+                <div class="social-media">
+                    <span>Nos siga nas redes sociais:</span>
+                    <a href="https://www.instagram.com" target="_blank"><img src="/images/instagram_logo.png" alt="Instagram" class="social-icon"></a>
+                    
+                    <!-- Adicione mais ícones de rede social conforme necessário -->
+                </div>
+            </div>
+        </div>
+        <div class="form-structor">
+            <div class="signup">
+                <h2 class="form-title" id="signup"><span>ou</span>Registro</h2>
+                <div class="form-holder">
+                    <input type="text" id="registerFullName" class="input" placeholder="Nome Completo" />
+                    <input type="email" id="registerEmail" class="input" placeholder="Email" />
+                    <input type="tel" id="registerPhone" class="input" placeholder="Telefone (DDD + Telefone)" />
+                    <input type="password" id="registerPassword" class="input" placeholder="Senha" />
+                </div>
+                <button class="submit-btn" id="registerButton">Registro</button>
+            </div>
+            <div class="login slide-up">
+                <div class="center">
+                    <h2 class="form-title" id="login"><span>ou</span>Entrar</h2>
+                    <div class="form-holder">
+                        <input type="email" id="loginEmail" class="input" placeholder="Email" />
+                        <input type="password" id="loginPassword" class="input" placeholder="Senha" />
+                    </div>
+                    <button class="submit-btn" id="loginButton">Entrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
