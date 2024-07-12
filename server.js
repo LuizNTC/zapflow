@@ -9,6 +9,7 @@ const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const MySQLStore = require('express-mysql-session')(session);
 const appJs = require('./app'); // Importa o módulo app.js
 
 const app = express();
@@ -23,17 +24,26 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Configuração do middleware de sessão
+const sessionStore = new MySQLStore({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: '147258',
+    database: 'whatsapp_db'
+});
+
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Defina como true se estiver usando HTTPS
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: { secure: false, maxAge: 86400000 } // 24 horas
 }));
 
 const dbConfig = {
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: '147258',
     database: 'whatsapp_db'
 };
 
@@ -136,13 +146,30 @@ app.post('/setPrompt', checkAuth, (req, res) => {
     const { basePrompt } = req.body;
     const userId = req.session.userId;
 
-    db.query('INSERT INTO prompts (user_id, prompt_text) VALUES (?, ?) ON DUPLICATE KEY UPDATE prompt_text = VALUES(prompt_text)', [userId, basePrompt], (err, result) => {
+    db.query('INSERT INTO prompts (user_id, prompt_text) VALUES (?, ?) ON DUPLICATE KEY UPDATE prompt_text = ?', [userId, basePrompt, basePrompt], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
         res.json({ message: 'Prompt configurado com sucesso!' });
     });
 });
+
+
+app.get('/getPrompt', checkAuth, (req, res) => {
+    const userId = req.query.userId;
+
+    db.query('SELECT prompt_text FROM prompts WHERE user_id = ?', [userId], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (results.length > 0) {
+            res.json({ prompt: results[0].prompt_text });
+        } else {
+            res.json({ prompt: '' });
+        }
+    });
+});
+
 
 let clientInstance;
 const requestQueue = [];
