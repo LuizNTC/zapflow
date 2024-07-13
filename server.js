@@ -114,6 +114,7 @@ app.post('/register', (req, res) => {
 
     db.query('INSERT INTO users (full_name, email, phone, password) VALUES (?, ?, ?, ?)', [full_name, email, phone, hashedPassword], (err, result) => {
         if (err) {
+            console.error('Erro ao registrar:', err.message);
             return res.status(500).json({ error: err.message });
         }
         res.json({ message: 'Usuário registrado com sucesso!' });
@@ -127,7 +128,7 @@ app.post('/login', (req, res) => {
 
     db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
         if (err) {
-            console.log('Erro na consulta do banco de dados:', err); // Adicionado para depuração
+            console.error('Erro na consulta do banco de dados:', err); // Adicionado para depuração
             return res.status(500).json({ error: 'Erro no servidor' });
         }
 
@@ -139,7 +140,7 @@ app.post('/login', (req, res) => {
         req.session.userId = results[0].id;
         req.session.save((err) => {
             if (err) {
-                console.log('Erro ao salvar a sessão:', err); // Adicionado para depuração
+                console.error('Erro ao salvar a sessão:', err); // Adicionado para depuração
                 return res.status(500).json({ error: 'Erro ao salvar a sessão' });
             }
 
