@@ -1,3 +1,5 @@
+require('dotenv').config(); // Carregue as variáveis de ambiente
+
 const express = require('express');
 const path = require('path');
 const venom = require('venom-bot');
@@ -16,7 +18,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
@@ -61,7 +63,7 @@ function handleDisconnect() {
 
     db.connect(function(err) {
         if (err) {
-            console.log('Erro ao conectar ao banco de dados:', err);
+            console.error('Erro ao conectar ao banco de dados:', err);
             setTimeout(handleDisconnect, 2000);
         } else {
             console.log('Conectado ao banco de dados MySQL.');
@@ -69,7 +71,7 @@ function handleDisconnect() {
     });
 
     db.on('error', function(err) {
-        console.log('Erro na conexão do banco de dados:', err);
+        console.error('Erro na conexão do banco de dados:', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else {
