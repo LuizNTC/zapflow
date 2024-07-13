@@ -16,22 +16,24 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const dbConfig = {
+// Configuração do middleware de sessão
+const sessionStore = new MySQLStore({
     host: process.env.DATABASE_HOST,
+    port: process.env.DATABASE_PORT || 3306,
     user: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
-    port: process.env.DATABASE_PORT || 3306
-};
-
-const sessionStore = new MySQLStore(dbConfig);
+    ssl: {
+        rejectUnauthorized: true
+    }
+});
 
 app.use(session({
     secret: 'your_secret_key',
@@ -40,6 +42,17 @@ app.use(session({
     store: sessionStore,
     cookie: { secure: false, maxAge: 86400000 } // 24 horas
 }));
+
+const dbConfig = {
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    port: process.env.DATABASE_PORT || 3306,
+    ssl: {
+        rejectUnauthorized: true
+    }
+};
 
 let db;
 
@@ -67,9 +80,10 @@ function handleDisconnect() {
 
 handleDisconnect();
 
+// Middleware de autenticação
 const checkAuth = (req, res, next) => {
     if (req.session.userId) {
-        console.log('Usuário autenticado:', req.session.userId);
+        console.log('Usuário autenticado:', req.session.userId); // Adicionado para depuração
         next();
     } else {
         console.log('Usuário não autenticado. Redirecionando para login.');
@@ -85,6 +99,7 @@ app.get('/index.html', checkAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Outras rotas protegidas
 app.get('/planos.html', checkAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'planos.html'));
 });
@@ -108,27 +123,27 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    console.log('Tentativa de login com email:', email);
+    console.log('Tentativa de login com email:', email); // Adicionado para depuração
 
     db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
         if (err) {
-            console.log('Erro na consulta do banco de dados:', err);
+            console.log('Erro na consulta do banco de dados:', err); // Adicionado para depuração
             return res.status(500).json({ error: 'Erro no servidor' });
         }
 
         if (results.length === 0 || !bcrypt.compareSync(password, results[0].password)) {
-            console.log('Credenciais inválidas para email:', email);
+            console.log('Credenciais inválidas para email:', email); // Adicionado para depuração
             return res.status(401).json({ error: 'Credenciais inválidas' });
         }
 
         req.session.userId = results[0].id;
         req.session.save((err) => {
             if (err) {
-                console.log('Erro ao salvar a sessão:', err);
+                console.log('Erro ao salvar a sessão:', err); // Adicionado para depuração
                 return res.status(500).json({ error: 'Erro ao salvar a sessão' });
             }
 
-            console.log('Login bem-sucedido para email:', email);
+            console.log('Login bem-sucedido para email:', email); // Adicionado para depuração
             res.json({ message: 'Login bem-sucedido', userId: results[0].id });
         });
     });
@@ -146,6 +161,7 @@ app.post('/setPrompt', checkAuth, (req, res) => {
     });
 });
 
+
 app.get('/getPrompt', checkAuth, (req, res) => {
     const userId = req.query.userId;
 
@@ -161,6 +177,7 @@ app.get('/getPrompt', checkAuth, (req, res) => {
     });
 });
 
+
 let clientInstance;
 const requestQueue = [];
 let isProcessingQueue = false;
@@ -173,7 +190,7 @@ app.post('/connect', checkAuth, (req, res) => {
     venom.create({
         session: `session_${userId}`,
         multidevice: true,
-        headless: true
+        headless: true // Alterado para executar em segundo plano
     }, (base64Qr, asciiQR) => {
         io.emit('qr', base64Qr);
         console.log(asciiQR);
@@ -188,7 +205,7 @@ app.post('/connect', checkAuth, (req, res) => {
         client.onMessage((message) => {
             console.log('Mensagem recebida:', message.body);
             requestQueue.push({ client, message });
-            processQueue(userId);
+            processQueue(userId); // Passa o userId do estabelecimento para o processQueue
         });
 
         res.send({ message: 'WhatsApp conectado com sucesso!' });
@@ -199,6 +216,7 @@ app.post('/connect', checkAuth, (req, res) => {
     });
 });
 
+// Endpoint de teste para verificar a sessão
 app.get('/check-session', (req, res) => {
     if (req.session.userId) {
         res.json({ authenticated: true, userId: req.session.userId });
@@ -243,16 +261,19 @@ const processQueue = (userId) => {
                 "contents": [{"parts": [{"text": fullPrompt}]}]
             })
             .then((response) => {
-                console.log('Resposta completa da API:', response.data);
+                console.log('Resposta completa da API:', response.data); // Log da resposta completa
 
+                // Ajuste para acessar a resposta correta
                 if (response.data && response.data.candidates && response.data.candidates[0] && response.data.candidates[0].content) {
                     const contentParts = response.data.candidates[0].content.parts;
-                    const reply = contentParts.map(part => part.text).join("\n");
-                    console.log('Resposta do Gemini:', reply);
+                    const reply = contentParts.map(part => part.text).join("\n"); // Extrai e concatena o texto de todas as partes
+                    console.log('Resposta do Gemini:', reply); // Mostra a resposta do Gemini no console
 
+                    // Atualiza o histórico da sessão
                     session.history.push(`Resposta da IA: ${reply}`);
                     sessions[message.from] = session;
 
+                    // Envia a resposta para o WhatsApp
                     client.sendText(message.from, reply)
                         .then(() => {
                             console.log('Mensagem enviada com sucesso');
@@ -271,7 +292,7 @@ const processQueue = (userId) => {
             .catch((err) => {
                 if (err.response && err.response.status === 429 && retries > 0) {
                     console.log(`Erro 429 recebido. Tentando novamente em 10 segundos... (${retries} tentativas restantes)`);
-                    setTimeout(() => tryRequest(retries - 1), 10000);
+                    setTimeout(() => tryRequest(retries - 1), 10000); // Tenta novamente após 10 segundos
                 } else {
                     console.log('Erro ao chamar API do Gemini:', err.message || err);
                     isProcessingQueue = false;
@@ -281,7 +302,7 @@ const processQueue = (userId) => {
         });
     };
 
-    tryRequest(3);
+    tryRequest(3); // Tenta a requisição com até 3 tentativas
 };
 
 server.listen(port, () => {
