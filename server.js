@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
@@ -25,11 +25,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Configuração do middleware de sessão
 const sessionStore = new MySQLStore({
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: '147258',
-    database: 'whatsapp_db'
+    host: process.env.DATABASE_HOST,
+    port: process.env.DATABASE_PORT || 3306,
+    user: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME
 });
 
 app.use(session({
@@ -41,10 +41,11 @@ app.use(session({
 }));
 
 const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '147258',
-    database: 'whatsapp_db'
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    port: process.env.DATABASE_PORT || 3306
 };
 
 let db;
