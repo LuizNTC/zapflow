@@ -1,0 +1,7 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/luizm4285/zapflow
+    - /bin/cp -rf . $DEPLOYPATH
+    - /usr/local/bin/npm install --prefix $DEPLOYPATH
+    - /usr/local/bin/npm run build --prefix $DEPLOYPATH
